@@ -43,7 +43,7 @@
     }
 
     #sort-view li {
-        width: 1%;
+        width: 0.5%;
         display: inline-block;
         background: #666;
         border-radius: 6px 6px 0px 0px;
@@ -74,6 +74,10 @@
     button:hover {
         background-color: #f5f5f5;
     }
+    button.disabled {
+        background-color: #fefefe;
+        color: #fafafa;
+    }
     </style>
 </head>
 
@@ -81,6 +85,7 @@
     <div class="btns">
         <button id="bubble">bubble</button>
         <button id="cocktail">cocktail</button>
+        <button id="selection">selection</button>
         <button id="quick">quick</button>
         <button id="insert">insert</button>
         <button id="shell">shell</button>
@@ -90,14 +95,14 @@
     <script>
     function random(start, end) {
         start = (start !== undefined) ? parseFloat(start) : 5;
-        end = (end !== undefined) ? parseFloat(end) : 100;
+        end = (end !== undefined) ? parseFloat(end) : 400;
         var num = Math.floor(Math.random() * (end - start + 1) + start);
         return num;
     }
 
     var len;
     var arr;
-    var amount = 100;
+    var amount = 200;
     var isSort = false;
     var sortView = document.getElementById('sort-view');
     var container = document.createElement('ul');
@@ -109,7 +114,7 @@
         for (var i = 0; i < amount; i++) {
             var child = document.createElement('li');
 
-            var number = random() * 4;
+            var number = random();
             Object.defineProperty(child, 'number', {
                 // writable: true,
                 configurable: true,
@@ -145,7 +150,7 @@
         });
         var startColor = 150;
         for (var i = 0; i < arr.length; i++) {
-            var color = `rgba(0, 250, ${startColor++}, 1)`;
+            var color = `rgba(0, 250, ${Math.floor(startColor+=0.5)}, 1)`;
             tarr[i].style.backgroundColor = color;
         }
     }
@@ -210,12 +215,50 @@
                 if (arr[i - 1].number >arr[i].number) {
                     swap(i, i - 1);
                 }
-                
+
                 addHeightLight(i, i + 1);
                 await sleep(5);
             }
             left++;
         }
+    }
+
+    async function selectionSort() {
+        var len = arr.length;
+        
+        var left = 0;
+        var right = len - 1;
+        var i, j;
+        while (left < right) {
+            j = left;
+            for (i = left; i <= right; i++) {
+                if (arr[j].number > arr[i].number) {
+                    j = i;
+                }
+
+                addHeightLight(left, i);
+                await sleep(5);  
+            }
+            if (j) {
+                swap(left, j);
+            }
+            left++;
+            
+            j = right;
+            for (i = right;i >= left; i--) {
+                if (arr[i].number > arr[j].number) {
+                    j = i;
+                }
+
+                addHeightLight(right, i);
+                await sleep(5);  
+            }
+            if (j) {
+                swap(j, right);
+            }
+            right--;
+        }
+        
     }
 
     async function quickSort(start, end) {
@@ -233,10 +276,10 @@
         }
 
         if (start < p - 1) {
-            quickSort(start, p - 1);
+            await quickSort(start, p - 1);
         }
         if (p < end - 1) {
-            quickSort(p + 1, end);
+            await quickSort(p + 1, end);
         }
     }
 
@@ -276,38 +319,58 @@
         addHeightLight(j, k);
     }
 
-
     async function shellSort() {
         var gap = Math.floor(arr.length / 2);
         while (gap > 0) {
-            for (var i = gap; i < arr.length; i += gap) {
-                var k = i;
-                for (var j = i - gap; j >= 0; j -= gap) {
-                    addHeightLight(j, k);
-                    await sleep(5);
+            for (var i = 0; i < gap; i++) {
 
-                    if (arr[j].number > arr[k].number) {
-                        var temp = arr[k];
-                        arr[k] = arr[j];
-                        arr[j] = temp;
-                        k = j;
-                    } else {
-                        break;
-                    }
-                }
+                for (var j = gap + i; j < arr.length; j += gap) {
+                    var m = j;
+                    var k = j - gap;
+                    
+                    while (k >= 0) {
+                        addHeightLight(k, m);
+                        await sleep(5);
+
+                        if (arr[k].number > arr[m].number) {
+                            swap(m, k);
+                            m = k;
+                            k -= gap;
+                        } else {
+                            break;
+                        }    
+                    }   
+                }  
             }
-            gap--;
+            gap = Math.floor(gap / 2);
         }
     }
 
     function init() {
+        var btnList = document.querySelector('.btns').children;
+        function _disBtn() {
+            for (var i = 0; i < btnList.length; i++) {
+                btnList[i].disabled = true;
+                btnList[i].classList.add('disabled');
+            }
+        }
+        function _ableBtn() {
+            for (var i = 0; i < btnList.length; i++) {
+                btnList[i].disabled = false;
+                btnList[i].classList.remove('disabled');
+            }
+        }
+
         createChild();
-        var btns = document.querySelector('.btns');
         document.querySelector('#bubble').onclick = function() {
             if (isSort) {
                 createChild();
             }
-            bubbleSort();
+            _disBtn();
+            bubbleSort().then(function(v){
+                _ableBtn();
+            });
+            
             isSort = true;
         };
 
@@ -315,7 +378,21 @@
             if (isSort) {
                 createChild();
             }
-            cocktailSort();
+            _disBtn();
+            cocktailSort().then(function(v){
+                _ableBtn();
+            });
+            isSort = true;
+        };
+
+        document.querySelector('#selection').onclick = function() {
+            if (isSort) {
+                createChild();
+            }
+            _disBtn();
+            selectionSort().then(function(v){
+                _ableBtn();
+            });
             isSort = true;
         };
 
@@ -323,7 +400,10 @@
             if (isSort) {
                 createChild();
             }
-            quickSort(0, arr.length - 1);
+            _disBtn();
+            quickSort(0, arr.length - 1).then(function(v){
+                _ableBtn();
+            });
             isSort = true;
         };
 
@@ -331,15 +411,20 @@
             if (isSort) {
                 createChild();
             }
-            insertSort();
+            _disBtn();
+            insertSort().then(function(v){
+                _ableBtn();
+            });
             isSort = true;
         };
         document.querySelector('#shell').onclick = function() {
             if (isSort) {
                 createChild();
             }
-            
-            shellSort();
+            _disBtn();
+            shellSort().then(function(v){
+                _ableBtn();
+            });
             isSort = true;
         };
     }

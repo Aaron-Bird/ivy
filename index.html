@@ -80,6 +80,7 @@
 <body>
     <div class="btns">
         <button id="bubble">bubble</button>
+        <button id="cocktail">cocktail</button>
         <button id="quick">quick</button>
         <button id="insert">insert</button>
         <button id="shell">shell</button>
@@ -126,7 +127,6 @@
         }
         addColor();
         len = arr.length;
-        // sortView.appendChild(container);
     }
 
     function addColor() {
@@ -188,6 +188,33 @@
                     swap(j, j + 1);
                 }
             }
+        }
+    }
+
+    async function cocktailSort() {
+        var i = 0;
+        var left = 0;
+        var right = arr.length - 1;
+        while(left < right) {
+            for (var i = left; i < right; i++){
+                if (arr[i].number > arr[i + 1].number) {
+                    swap(i, i + 1);
+                }     
+
+                addHeightLight(i, i + 1);
+                await sleep(5);   
+       
+            }
+            right--;
+            for (var i = right; i > left; i--){
+                if (arr[i - 1].number >arr[i].number) {
+                    swap(i, i - 1);
+                }
+                
+                addHeightLight(i, i + 1);
+                await sleep(5);
+            }
+            left++;
         }
     }
 
@@ -281,6 +308,14 @@
                 createChild();
             }
             bubbleSort();
+            isSort = true;
+        };
+
+        document.querySelector('#cocktail').onclick = function() {
+            if (isSort) {
+                createChild();
+            }
+            cocktailSort();
             isSort = true;
         };
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
@@ -8,16 +9,17 @@
         margin: 0;
         padding: 0;
     }
+
     body {
         background-color: #fefefe;
         /*position: relative;*/
     }
+
     #sort-view {
         width: 800px;
         height: 400px;
         background-color: #fefeff;
-        box-shadow: 0 0 10px 1px rgba(0,0,0,0.1);
-        
+        box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.1);
         position: absolute;
         top: 0;
         left: 0;
@@ -25,10 +27,11 @@
         bottom: 0;
         margin: auto;
     }
+
     #sort-view ul {
-        list-style:  none;
         width: 100%;
         height: 100%;
+        list-style: none;
     }
 
     #sort-view ul:before,
@@ -37,69 +40,72 @@
         display: inline-block;
         height: 100%;
         width: 0;
-        background: #ff0;
     }
+
     #sort-view li {
         width: 1%;
         display: inline-block;
         background: #666;
         border-radius: 6px 6px 0px 0px;
     }
+
     .sorting {
         background-color: #ff0!important;
     }
+
     .btns {
         margin: 10px;
         text-align: center;
     }
+
     button {
         width: 80px;
         height: 35px;
-        background-color: #f9f9f9;
         border: 0;
+        background-color: #f9f9f9;
         border-bottom: 2px solid #f0f0f0;
         border-top: 2px solid #fff;
         outline: 0px;
-        
         border-radius: 8px;
-        box-shadow: 0 0;
         color: #666;
         transition: 0.2s linear;
     }
+
     button:hover {
         background-color: #f5f5f5;
     }
     </style>
 </head>
+
 <body>
     <div class="btns">
         <button id="bubble">bubble</button>
         <button id="quick">quick</button>
         <button id="insert">insert</button>
+        <button id="shell">shell</button>
     </div>
     <div id="sort-view">
-        
     </div>
-<script>
-
-    function random(start, end){
+    <script>
+    function random(start, end) {
         start = (start !== undefined) ? parseFloat(start) : 5;
         end = (end !== undefined) ? parseFloat(end) : 100;
         var num = Math.floor(Math.random() * (end - start + 1) + start);
         return num;
     }
-    
+
     var len;
     var arr;
     var amount = 100;
     var isSort = false;
     var sortView = document.getElementById('sort-view');
-    var container =  document.createElement('ul');
+    var container = document.createElement('ul');
     sortView.appendChild(container);
-    function createChild(){
+
+    function createChild() {
         arr = [];
         container.innerHTML = '';
-        for (var i = 0; i < amount; i++){
+        for (var i = 0; i < amount; i++) {
             var child = document.createElement('li');
 
             var number = random() * 4;
@@ -107,10 +113,10 @@
                 // writable: true,
                 configurable: true,
                 enumerable: true,
-                set: function(value){
+                set: function(value) {
                     this.style.height = value + 'px';
                 },
-                get: function(){
+                get: function() {
                     return parseInt(this.style.height);
                 }
             });
@@ -123,13 +129,13 @@
         // sortView.appendChild(container);
     }
 
-    function addColor(){
+    function addColor() {
         var tarr = [];
         for (var i = 0; i < arr.length; i++) {
             tarr.push(arr[i]);
-        }     
-        tarr.sort(function(x,y){
-            if (x.number < y.number){
+        }
+        tarr.sort(function(x, y) {
+            if (x.number < y.number) {
                 return -1;
             } else if (x.number > y.number) {
                 return 1;
@@ -138,7 +144,7 @@
             }
         });
         var startColor = 150;
-        for (var i = 0;i < arr.length; i++) {
+        for (var i = 0; i < arr.length; i++) {
             var color = `rgba(0, 250, ${startColor++}, 1)`;
             tarr[i].style.backgroundColor = color;
         }
@@ -146,45 +152,46 @@
 
     function refresh() {
         container.innerHTML = '';
-        for (var i = 0; i < arr.length; i ++) {
+        for (var i = 0; i < arr.length; i++) {
             container.appendChild(arr[i]);
         }
     }
 
     function addHeightLight() {
-        for (var i = 0;i < arr.length; i++) {
+        for (var i = 0; i < arr.length; i++) {
             arr[i].classList.remove('sorting');
         }
-        for (var i = 0; i < arguments.length; i ++) {
+        for (var i = 0; i < arguments.length; i++) {
             arr[arguments[i]].classList.add('sorting');
         }
         refresh();
     }
 
     function swap(x, y) {
-        var temp =  arr[x];
+        var temp = arr[x];
         arr[x] = arr[y];
         arr[y] = temp;
         refresh();
     }
 
     function sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    async function bubbleSort(){
+    async function bubbleSort() {
         for (var i = 0; i < arr.length - 1; i++) {
             for (var j = 0; j < len - i - 1; j++) {
-                addHeightLight(j, j+1);
-                await sleep(1);
+                addHeightLight(j, j + 1);
+                await sleep(5);
 
                 if (arr[j].number > arr[j + 1].number) {
-                    swap(j, j+1);
+                    swap(j, j + 1);
                 }
             }
         }
     }
-   async function quickSort(start, end){
+
+    async function quickSort(start, end) {
         var p = start;
         for (var i = start + 1; i <= end; i++) {
             if (arr[i].number < arr[p].number) {
@@ -194,15 +201,15 @@
                 p++;
             }
 
-            addHeightLight(p,i);
-            await sleep(20);
-        }  
-        
+            addHeightLight(p, i);
+            await sleep(5);
+        }
+
         if (start < p - 1) {
             quickSort(start, p - 1);
         }
         if (p < end - 1) {
-            quickSort(p + 1, end);     
+            quickSort(p + 1, end);
         }
     }
 
@@ -210,7 +217,7 @@
         for (var i = 1; i < arr.length; i++) {
             var j = i - 1;
             var k = i;
-            while ( j >= 0  && arr[k].number < arr[j].number) {
+            while (j >= 0 && arr[k].number < arr[j].number) {
                 addHeightLight(j, k);
                 await sleep(1);
 
@@ -220,40 +227,89 @@
                 k = j;
                 j--;
             }
-        } 
+        }
         addHeightLight(j, k);
+    }
+
+    async function insertSort() {
+        for (var i = 1; i < arr.length; i++) {
+            var j = i - 1;
+            var k = i;
+            while (j >= 0 && arr[k].number < arr[j].number) {
+                addHeightLight(j, k);
+                await sleep(5);
+
+                var temp = arr[k];
+                arr.splice(k, 1);
+                arr.splice(j, 0, temp);
+                k = j;
+                j--;
+            }
+        }
+        addHeightLight(j, k);
+    }
+
+
+    async function shellSort() {
+        var gap = Math.floor(arr.length / 2);
+        while (gap > 0) {
+            for (var i = gap; i < arr.length; i += gap) {
+                var k = i;
+                for (var j = i - gap; j >= 0; j -= gap) {
+                    addHeightLight(j, k);
+                    await sleep(5);
+
+                    if (arr[j].number > arr[k].number) {
+                        var temp = arr[k];
+                        arr[k] = arr[j];
+                        arr[j] = temp;
+                        k = j;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            gap--;
+        }
     }
 
     function init() {
         createChild();
         var btns = document.querySelector('.btns');
-        document.querySelector('#bubble').onclick = function() { 
+        document.querySelector('#bubble').onclick = function() {
             if (isSort) {
-                createChild();  
+                createChild();
             }
             bubbleSort();
             isSort = true;
         };
 
-        document.querySelector('#quick').onclick = function() { 
+        document.querySelector('#quick').onclick = function() {
             if (isSort) {
-                createChild();  
+                createChild();
             }
             quickSort(0, arr.length - 1);
             isSort = true;
         };
 
-        document.querySelector('#insert').onclick = function() { 
+        document.querySelector('#insert').onclick = function() {
             if (isSort) {
-                createChild();  
+                createChild();
             }
             insertSort();
             isSort = true;
         };
+        document.querySelector('#shell').onclick = function() {
+            if (isSort) {
+                createChild();
+            }
+            
+            shellSort();
+            isSort = true;
+        };
     }
     init();
-    
-</script>
-
+    </script>
 </body>
+
 </html>

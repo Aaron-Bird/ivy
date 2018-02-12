@@ -97,6 +97,34 @@
     <div id="sort-view">
     </div>
     <script>
+    //source
+    //https://graphicdesign.stackexchange.com/questions/83866/generating-a-series-of-colors-between-two-colors
+    //start
+    function interpolateColor(color1, color2, factor) {
+        if (arguments.length < 3) { 
+            factor = 0.5; 
+        }
+        var result = color1.slice();
+        for (var i = 0; i < 3; i++) {
+            result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));
+        }
+        return result;
+    };
+    function interpolateColors(color1, color2, steps) {
+        var stepFactor = 1 / (steps - 1),
+            interpolatedColorArray = [];
+
+        color1 = color1.match(/\d+/g).map(Number);
+        color2 = color2.match(/\d+/g).map(Number);
+
+        for(var i = 0; i < steps; i++) {
+            interpolatedColorArray.push(interpolateColor(color1, color2, stepFactor * i));
+        }
+
+        return interpolatedColorArray;
+    }
+    //end
+
     function random(start, end) {
         start = (start !== undefined) ? parseFloat(start) : 5;
         end = (end !== undefined) ? parseFloat(end) : 400;
@@ -153,10 +181,22 @@
             }
         });
         var startColor = 150;
-        for (var i = 0; i < arr.length; i++) {
-            var color = `rgba(0, 250, ${Math.floor(startColor+=0.5)}, 1)`;
-            tarr[i].style.backgroundColor = color;
+
+        var c = interpolateColors("rgb(51,8,103)", "rgb(48,207,208)", 200);
+        var i = 0;
+        var j = 0;
+        while(i < arr.length) {
+            if (i === 0 || tarr[i - 1].number !== tarr[i].number) {
+                var color = `rgba(${c[j][0]},${c[j][1]},${c[j][2]},1)`;
+                j++; 
+            }
+            tarr[i].style.backgroundColor = color;  
+            i++;
         }
+        // for (var i = 0; i < arr.length; i++) {
+        //     // var color = `rgba(0, 250, ${Math.floor(startColor+=0.5)}, 1)`;
+        //     // tarr[i].style.backgroundColor = color;
+        // }
     }
 
     function refresh() {

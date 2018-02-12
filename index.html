@@ -45,14 +45,14 @@
     }
 
     #sort-view li {
-        width: 0.5%;
+        width: calc( 100% / 50 );
         display: inline-block;
         background: #666;
-        border-radius: 6px 6px 0px 0px;
+        border-radius: 10px 10px 0px 0px;
     }
 
     .sorting {
-        background-color: #ff0!important;
+        background-color: #1aede9!important;
     }
 
     .btns {
@@ -134,7 +134,7 @@
 
     var len;
     var arr;
-    var amount = 200;
+    var amount = 50;
     var isSort = false;
     var sortView = document.getElementById('sort-view');
     var container = document.createElement('ul');
@@ -180,9 +180,9 @@
                 return 0;
             }
         });
-        var startColor = 150;
+        // var startColor = 150;
 
-        var c = interpolateColors("rgb(51,8,103)", "rgb(48,207,208)", 200);
+        var c = interpolateColors("rgb(51,8,103)", "rgb(48,207,208)", amount);
         var i = 0;
         var j = 0;
         while(i < arr.length) {
@@ -231,7 +231,7 @@
         for (var i = 0; i < arr.length - 1; i++) {
             for (var j = 0; j < len - i - 1; j++) {
                 addHeightLight(j, j + 1);
-                await sleep(1);
+                await sleep(20);
 
                 if (arr[j].number > arr[j + 1].number) {
                     swap(j, j + 1);
@@ -251,7 +251,7 @@
                 }     
 
                 addHeightLight(i, i + 1);
-                await sleep(1);   
+                await sleep(20);   
        
             }
             right--;
@@ -261,7 +261,7 @@
                 }
 
                 addHeightLight(i, i + 1);
-                await sleep(1);
+                await sleep(20);
             }
             left++;
         }
@@ -281,7 +281,7 @@
                 }
 
                 addHeightLight(left, i);
-                await sleep(1);  
+                await sleep(20);  
             }
             if (j) {
                 swap(left, j);
@@ -295,7 +295,7 @@
                 }
 
                 addHeightLight(right, i);
-                await sleep(1);  
+                await sleep(20);  
             }
             if (j) {
                 swap(j, right);
@@ -316,7 +316,7 @@
             }
 
             addHeightLight(p, i);
-            await sleep(1);
+            await sleep(20);
         }
 
         if (start < p - 1) {
@@ -333,7 +333,7 @@
             var k = i;
             while (j >= 0 && arr[k].number < arr[j].number) {
                 addHeightLight(j, k);
-                await sleep(1);
+                await sleep(20);
 
                 var temp = arr[k];
                 arr.splice(k, 1);
@@ -356,7 +356,7 @@
                     
                     while (k >= 0) {
                         addHeightLight(k, m);
-                        await sleep(1);
+                        await sleep(20);
 
                         if (arr[k].number > arr[m].number) {
                             swap(m, k);

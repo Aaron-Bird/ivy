@@ -3,7 +3,7 @@ Visualization of sorting algorithm
 - bubble
 - cocktail
 - selection
-- quict
+- quick
 - insert
 - shell
 

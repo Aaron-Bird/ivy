@@ -1,5 +1,8 @@
 # ivy
+
 Visualization of sorting algorithm
+[preview](http://htmlpreview.github.io/?https://github.com/Aaron-Bird/ivy/blob/master/index.html)
+
 - bubble
 - cocktail
 - selection
@@ -7,4 +10,4 @@ Visualization of sorting algorithm
 - insert
 - shell
 
-[preview](http://htmlpreview.github.io/?https://github.com/Aaron-Bird/ivy/blob/master/index.html)
+![screenshot](/docs/shell.gif)

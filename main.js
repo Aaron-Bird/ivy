@@ -1,4 +1,4 @@
-window.onload = function() {
+document.addEventListener('DOMContentLoaded', function() {
     // author: Zach Saucier
     // source: https://graphicdesign.stackexchange.com/questions/83866/generating-a-series-of-colors-between-two-colors
     function interpolateColor(color1, color2, factor) {
@@ -296,4 +296,4 @@ window.onload = function() {
         }
     }
     init();
-}
+});

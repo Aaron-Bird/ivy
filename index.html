@@ -48,6 +48,7 @@
             width: calc( 100% / 50);
             border-radius: 10px 10px 0px 0px;
             background: #666;
+            transition: 0.1s;
         }
 
         .sorting {
@@ -64,7 +65,7 @@
         button {
             width: 80px;
             height: 35px;
-            margin: 10px;
+            margin: 8px;
             transition: 0.4s linear;
             letter-spacing: 1px;
             color: #666;
@@ -105,19 +106,20 @@
 
 <body>
     <div class="btns">
-        <button id="bubble" class="sort-btn">bubble</button>
-        <button id="cocktail" class="sort-btn">cocktail</button>
-        <button id="selection" class="sort-btn">selection</button>
-        <button id="quick" class="sort-btn">quick</button>
-        <button id="insert" class="sort-btn">insert</button>
-        <button id="shell" class="sort-btn">shell</button>
-        <button id="stop" onclick="window.location.reload()" style="border:1px solid #f5f5f5;">stop</button>
+        <button id="bubble" class="sort">bubble</button>
+        <button id="cocktail" class="sort">cocktail</button>
+        <button id="selection" class="sort">selection</button>
+        <button id="quick" class="sort">quick</button>
+        <button id="insert" class="sort">insert</button>
+        <button id="shell" class="sort">shell</button>
+        <button id="random" style="border:1px solid #f5f5f5;">random</button>
+        <button id="stop" style="border:1px solid #f5f5f5;">stop</button>
     </div>
     <div id="sort-view">
         <ul>
         </ul>
     </div>
-    <a href="https://github.com/Aaron-Bird/ivy"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    <!-- <a href="https://github.com/Aaron-Bird/ivy"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a> -->
 </body>
 
 </html>

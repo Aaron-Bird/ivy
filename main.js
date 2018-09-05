@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', function () {
         let container = document.querySelector('#sort-view ul');
         container.innerHTML = '';
         let ulHeight = parseInt(getComputedStyle(container, null).height);
+        let ulWidth = parseInt(getComputedStyle(container, null).width);
+        let liWidth = ulWidth / amount;
+        let liboardRadius = liWidth / 2;
 
         let colorStart = 'rgb(51,8,103)'.match(/\d+/g).map(Number);
         let colorEnd = 'rgb(48,207,208)'.match(/\d+/g).map(Number);
@@ -16,15 +19,14 @@ document.addEventListener('DOMContentLoaded', function () {
         let arr = [];
         for (let i = 0; i < amount; i++) {
             let li = document.createElement('li');
-            let number = (ulHeight - 10) / amount * i + 10;
+            let number = (ulHeight - liboardRadius) / amount * i + liboardRadius;
             li.number = number;
             li.style.height = number + 'px';
-
-            li.style.backgroundColor = `rgba(
+            li.style.width = liWidth + 'px';
+            li.style.backgroundColor = `rgb(
                 ${Math.floor(colorStart[0] + rDifference * i)},
                 ${Math.floor(colorStart[1] + gDifference * i)},
-                ${Math.floor(colorStart[2] + bDifference * i)},
-                1
+                ${Math.floor(colorStart[2] + bDifference * i)}
             )`;
             arr.push(li);
         }
@@ -36,6 +38,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let data = {
         container: document.querySelector('#sort-view ul'),
         children: document.querySelector('#sort-view ul').getElementsByTagName('li'),
+        speed: parseInt(document.querySelector('#speed').value) || 50,
+        amount: parseInt(document.querySelector('#amount').value) || 40,
         get length() {
             return this.children.length;
         },
@@ -52,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
             container.insertBefore(elementJ, elementI);
             container.insertBefore(elementI, afterElementOfJ);
 
-            await sleep(20);
+            await sleep(this.speed);
         },
 
         async insert(i, target) {
@@ -60,30 +64,30 @@ document.addEventListener('DOMContentLoaded', function () {
                 children = this.children;
             container.insertBefore(children[i], children[target]);
 
-            await sleep(20);
+            await sleep(this.speed);
         },
 
         async highlight(...args) {
             [...this.children].forEach(element => element.classList.remove('sorting'));
             args.forEach(i => this.children[i].classList.add('sorting'));
 
-            await sleep(20);
+            await sleep(this.speed);
         }
     };
     let stop = false;
     data = new Proxy(data, {
         get(target, propKey, receiver) {
-            if (stop) throw 'stop';
             if (/^\d+$/.test(propKey)) {
+                if (stop) throw 'stop';
                 return target.children[propKey];
             }
             return Reflect.get(target, propKey, receiver);
         },
 
-        set(target, propKey, value, receiver) {
-            if (stop) throw 'stop';
-            return Reflect.set(target, propKey, value, receiver);
-        }
+        // set(target, propKey, value, receiver) {
+        //     if (stop) throw 'stop';
+        //     return Reflect.set(target, propKey, value, receiver);
+        // }
     });
 
     let algorithm = {
@@ -161,7 +165,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 await data.highlight(p, i);
 
                 if (data[i].number < data[p].number) {
-                    await data.insert(i, start);
+                    // await data.insert(i, start);
+                    await data.insert(i, p);
                     p++;
                 }
             }
@@ -231,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        createData(50);
+        createData(40);
 
         document.querySelectorAll('.sort').forEach(element => {
             element.addEventListener('click', event => {
@@ -252,9 +257,19 @@ document.addEventListener('DOMContentLoaded', function () {
             stop = true;
         });
 
-        document.querySelector('#random').addEventListener('click', event => {
+        document.querySelector('#shuffle').addEventListener('click', event => {
             stop = true;
-            createData(50);
+            createData(data.amount);
+        });
+
+        document.querySelector('#speed').addEventListener('input', event => {
+            data.speed = parseInt(event.currentTarget.value);
+        });
+
+        document.querySelector('#amount').addEventListener('input', event => {
+            amount = parseInt(event.currentTarget.value);
+            data.amount = amount > 1000 ? 1000 : amount;
+            createData(data.amount);
         });
     }
     init();

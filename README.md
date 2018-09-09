@@ -3,11 +3,11 @@
 Visualization of sorting algorithm
 [preview](http://htmlpreview.github.io/?https://github.com/Aaron-Bird/ivy/blob/master/index.html)
 
-- bubble
-- cocktail
-- selection
-- quick
-- insert
-- shell
-
-![screenshot](/docs/shell.gif)
+- Bubble sort
+- Insert sort
+- Cocktail sort
+- Selection sort
+- Quick sort
+- Shell sort
+- Merge sort
+- Sleep sort

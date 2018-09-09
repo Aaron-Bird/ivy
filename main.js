@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
             let arr = [];
             for (let i = 0; i < amount; i++) {
                 let li = document.createElement('li');
-                let number = (ulHeight - liboardRadius) / amount * i + liboardRadius;
+                let number = Math.round((ulHeight - liboardRadius) / amount * i + liboardRadius);
                 li.number = number;
                 li.style.height = number + 'px';
                 li.style.width = liWidth + 'px';
@@ -75,9 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
 
         *[Symbol.iterator]() {
-            console.log('start')
             for (let element of this.children) {
-
                 yield element;
             }
         }
@@ -168,7 +166,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 await data.highlight(p, i);
 
                 if (data[i] < data[p]) {
-                    // await data.insert(i, start);
                     await data.insert(i, p);
                     p++;
                 }
@@ -196,7 +193,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     j--;
                 }
             }
-            // await data.highlight(j, k);
         },
 
         async shell() {
@@ -238,7 +234,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 left++;
             }
+        },
+
+        async sleep() {
+            let j = 0;
+            let container = data.container;
+            // Set a delay to have all 'setTimeout' start at the same time
+            let willStartTime = new Date().getTime() + 100;
+            for (let i = 0; i < data.length; i++) {
+                let element = data.children[i];
+                let timeDiff = willStartTime - new Date().getTime();
+                setTimeout(_ => {
+                    if (data.freeze) return;
+                    // Unable to determine index after order change, sorted by element instead of index
+                    container.insertBefore(element, data.children[j]);
+                    j++;
+                }, timeDiff + data[i] * 10);
+            }
+            // Block the function until all 'setTimeout' is finished
+            // But the "stop button" will fail
+            await sleep(400 * 10);
         }
+
     };
 
     let init = _ => {
@@ -258,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        data.createData(40);
+        data.createData(parseInt(document.querySelector('#amount').value));
 
         document.querySelectorAll('.sort').forEach(element => {
             element.addEventListener('click', event => {
@@ -292,6 +309,57 @@ document.addEventListener('DOMContentLoaded', function () {
             let length = parseInt(event.currentTarget.value);
             data.createData(length > 800 ? 800 : length);
         });
+
+        (_ => {
+            let sign = true,
+                delay = 100;
+            document.querySelector('#amount').addEventListener('keydown', event => {
+                if (sign === false) return;
+
+                if (event.key === 'ArrowUp') {
+                    let length = parseInt(event.currentTarget.value) + 50;
+                    if (length > 900) length = 900;
+                    event.currentTarget.value = length;
+                    data.createData(length);
+
+                    sign = false;
+                    setTimeout(_ => sign = true, delay);
+                } else if (event.key === 'ArrowDown') {
+                    let length = parseInt(event.currentTarget.value) - 50;
+                    if (length < 0) length = 0;
+                    event.currentTarget.value = length;
+                    data.createData(length > 900 ? 900 : length);
+
+                    sign = false;
+                    setTimeout(_ => sign = true, delay);
+                }
+            });
+        })();
+
+        (_ => {
+            let sign = true,
+                delay = 10;
+            document.querySelector('#speed').addEventListener('keydown', event => {
+                if (sign === false) return;
+
+                if (event.key === 'ArrowUp') {
+                    let speed = parseInt(event.currentTarget.value) + 5;
+                    event.currentTarget.value = speed;
+                    data.speed = speed;
+
+                    sign = false;
+                    setTimeout(_ => sign = true, delay);
+                } else if (event.key === 'ArrowDown') {
+                    let speed = parseInt(event.currentTarget.value) - 5;
+                    if (speed < 0) speed = 0;
+                    event.currentTarget.value = speed;
+                    data.speed = speed;
+
+                    sign = false;
+                    setTimeout(_ => sign = true, delay);
+                }
+            });
+        })();
     }
     init();
 });

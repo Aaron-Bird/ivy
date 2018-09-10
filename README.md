@@ -10,4 +10,5 @@ Visualization of sorting algorithm
 - Quick sort
 - Shell sort
 - Merge sort
+- Heap sort
 - Sleep sort

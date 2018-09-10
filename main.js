@@ -236,6 +236,34 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
 
+        async heap() {
+            let maxHeap = async (i, length) => {
+                let l = 2 * i + 1,
+                    r = 2 * i + 2;
+                if (l >= length) return;
+
+                let max = (r < length && data[l] <= data[r]) ? r : l;
+                await data.highlight(i, max);
+
+                if (data[i] < data[max]) {
+                    await data.swap(i, max);
+                    await maxHeap(max, length);
+                }
+            }
+
+            let length = data.length;
+            // Create a max heap
+            for (let i = Math.floor(length / 2) - 1; i >= 0; i--) {
+                await maxHeap(i, length);
+            }
+            for (let i = length - 1; i >= 0; i--) {
+                // Move the maximum number to the end
+                await data.swap(0, i);
+                // Heap sorting the remaining numbers
+                await maxHeap(0, i);
+            }
+        },
+
         async sleep() {
             let j = 0;
             let container = data.container;

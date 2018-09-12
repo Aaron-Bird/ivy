@@ -94,13 +94,16 @@ document.addEventListener('DOMContentLoaded', function () {
     let algorithm = {
         async bubble() {
             for (let i = data.length; i >= 0; i--) {
+                let swapped = false;
                 for (let j = 0; j < i - 1; j++) {
                     await data.highlight(j, j + 1);
 
                     if (data[j] > data[j + 1]) {
                         await data.swap(j, j + 1);
+                        swapped = true;
                     }
                 }
+                if (!swapped) return;
             }
         },
 
@@ -108,23 +111,31 @@ document.addEventListener('DOMContentLoaded', function () {
             let left = 0,
                 right = data.length - 1;
             while (left < right) {
+                let swapped = false;
                 for (let i = left; i < right; i++) {
                     await data.highlight(i, i + 1);
 
                     if (data[i] > data[i + 1]) {
                         await data.swap(i, i + 1);
+                        swapped = true;
                     }
-
                 }
                 right--;
+
+                if (!swapped) return;
+                swapped = true;
+
                 for (let i = right; i > left; i--) {
                     await data.highlight(i, i - 1);
 
                     if (data[i - 1] > data[i]) {
                         await data.swap(i, i - 1);
+                        swapped = true;
                     }
                 }
                 left++;
+
+                if (!swapped) return;
             }
         },
 
@@ -262,6 +273,41 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Heap sorting the remaining numbers
                 await maxHeap(0, i);
             }
+        },
+
+        async bitonic() {
+            let getMultipleOfTwo = (n) => {
+                let m = 1;
+                while (m < n) {
+                    m = m << 1;
+                }
+                return m >> 1;
+            };
+
+            let merge = async (start, length, isAscending) => {
+                if (length <= 1) return;
+                let gap = getMultipleOfTwo(length);
+
+                for (let i = start; i < start + length - gap; i++) {
+                    await data.highlight(i, i + gap);
+
+                    if (data[i] > data[i + gap] === isAscending) {
+                        await data.swap(i, i + gap)
+                    }
+                }
+                await merge(start, gap, isAscending);
+                await merge(start + gap, length - gap, isAscending);
+            };
+
+            let divide = async (start, length, isAscending) => {
+                if (length <= 1) return;
+                let gap = getMultipleOfTwo(length);
+                await divide(start, gap, false);
+                await divide(start + gap, length - gap, true);
+                await merge(start, length, isAscending);
+            };
+
+            await divide(0, data.length, true);
         },
 
         async sleep() {

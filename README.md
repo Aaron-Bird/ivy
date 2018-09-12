@@ -11,4 +11,5 @@ Visualization of sorting algorithm
 - Shell sort
 - Merge sort
 - Heap sort
+- Bitonic sort
 - Sleep sort

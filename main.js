@@ -69,7 +69,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         async highlight(...args) {
             [...this.children].forEach(element => element.classList.remove('sorting'));
-            args.forEach(i => this.children[i].classList.add('sorting'));
+            args.forEach(i => {
+                if (i < 0 || i >= this.length) return;
+                this.children[i].classList.add('sorting');
+            });
 
             await sleep(this.speed);
         },
@@ -206,6 +209,24 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
 
+        async gnome() {
+            let i = 0;
+            while (i < data.length) {
+                await data.highlight(i - 1, i);
+
+                if (i === 0 || data[i - 1] < data[i]) {
+                    i++;
+
+                    // await data.highlight(i);
+                } else {
+                    // await data.highlight(i - 1, i);
+                    console.log(i, i - 1);
+                    await data.swap(i - 1, i);
+                    i--;
+                }
+            }
+        },
+
         async shell() {
             let gap = Math.floor(data.length / 2);
             while (gap > 0) {
@@ -225,6 +246,25 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
                 gap = Math.floor(gap / 2);
+            }
+        },
+
+        async comb() {
+            let gap = Math.floor(data.length * 0.8);
+            // let swapped = true;
+            while (gap > 1 || swapped) {
+                if (gap < 1) return;
+
+                swapped = false;
+                for (let i = 0; i < data.length - gap; i++) {
+                    await data.highlight(i, i + gap);
+
+                    if (data[i] > data[i + gap]) {
+                        swapped = true;
+                        await data.swap(i, i + gap);
+                    }
+                }
+                gap = Math.floor(gap * 0.8);
             }
         },
 
@@ -276,6 +316,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
 
         async bitonic() {
+            // Returns the multiple of 2 closest to n
             let getMultipleOfTwo = (n) => {
                 let m = 1;
                 while (m < n) {
@@ -290,7 +331,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 for (let i = start; i < start + length - gap; i++) {
                     await data.highlight(i, i + gap);
-
+                    // monotonic increasing and data[i] > data[i + gap] 
+                    // monotonic decreasing and data[i] < data[i + gap]
                     if (data[i] > data[i + gap] === isAscending) {
                         await data.swap(i, i + gap)
                     }
@@ -301,6 +343,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             let divide = async (start, length, isAscending) => {
                 if (length <= 1) return;
+                // when length = 7, the array will be split into
+                // [0, 1, 2 , 3] [[4, 5], 6]
                 let gap = getMultipleOfTwo(length);
                 await divide(start, gap, false);
                 await divide(start + gap, length - gap, true);

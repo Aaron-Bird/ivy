@@ -3,13 +3,17 @@
 Visualization of sorting algorithm
 [preview](http://htmlpreview.github.io/?https://github.com/Aaron-Bird/ivy/blob/master/index.html)
 
-- Bubble sort
-- Insert sort
-- Cocktail sort
-- Selection sort
-- Quick sort
-- Shell sort
-- Merge sort
-- Heap sort
-- Bitonic sort
-- Sleep sort
+name | average | worst
+--- | --- | ---
+Bubble sort | Θ(n<sup>2</sup>) | O(n<sup>2</sup>)
+Insert sort | Θ(n<sup>2</sup>) | O(n<sup>2</sup>)
+Gnome sort | Θ(n<sup>2</sup>) | O(n<sup>2</sup>)
+Cocktail sort | Θ(n<sup>2</sup>) | O(n<sup>2</sup>)
+Selection sort | Θ(n<sup>2</sup>) | O(n<sup>2</sup>)
+Shell sort | Θ(n log<sup>2</sup> n) | O(n log<sup>2</sup> n)
+Comb sort | Θ(n<sup>2</sup>) | O(n<sup>2</sup>)
+Quick sort | Θ(n log n) | O(n<sup>2</sup>)
+Merge sort | Θ(n log n) | O(n log n)
+Heap sort | Θ(n log n) | O(n log n)
+Bitonic sort | Θ(n log<sup>2</sup> n) | O(n log<sup>2</sup> n)
+Sleep sort | |

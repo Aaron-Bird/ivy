@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>
+        ivy
+    </title>
+    <script>
+        if (typeof(Proxy) === 'undefined') alert('The browser is not supported, please use chrome or firefox');
+    </script>
+<script type="text/javascript" src="main.js"></script></head>
+
+<body>
+    <div class="main">
+        <div id="sort-view">
+            <ul></ul>
+        </div>
+        <div class="btns">
+            <div class="row">
+                <button id="bubble" class="sort">bubble</button>
+                <button id="insert" class="sort">insert</button>
+                <button id="gnome" class="sort">gnome</button>
+                <button id="cocktail" class="sort">cocktail</button>
+                <button id="selection" class="sort">selection</button>
+                <button id="shell" class="sort">shell</button>
+                <button id="comb" class="sort">comb</button>
+            </div>
+            <div class="row" style="margin-bottom: 6px">
+                <button id="quick" class="sort">quick</button>
+                <button id="merge" class="sort">merge</button>
+                <button id="heap" class="sort">heap</button>
+                <button id="bitonic" class="sort">bitonic</button>
+                <button id="sleep" class="sort">sleep</button>
+            </div>
+            <div class="row">
+                <span>amount</span>
+                <input id="amount" style="border:1px solid #f5f5f5;" value="50">
+                <span>speed</span>
+                <input id="speed" style="border:1px solid #f5f5f5;" value="20">
+                <button id="shuffle" style="border:1px solid #f5f5f5;">shuffle</button>
+                <button id="stop" style="border:1px solid #f5f5f5;">stop</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,5 +1,6 @@
-document.addEventListener('DOMContentLoaded', function () {
+import './main.css'
 
+document.addEventListener('DOMContentLoaded', function () {
     let sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
     let data = {
@@ -50,9 +51,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (i > j) {
                 [i, j] = [j, i];
             }
-            elementI = children[i];
-            elementJ = children[j];
-            afterElementOfJ = children[j].nextElementSibling;
+            let elementI = children[i];
+            let elementJ = children[j];
+            let afterElementOfJ = children[j].nextElementSibling;
             container.insertBefore(elementJ, elementI);
             container.insertBefore(elementI, afterElementOfJ);
 
@@ -216,10 +217,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (i === 0 || data[i - 1] < data[i]) {
                     i++;
-
-                    // await data.highlight(i);
                 } else {
-                    // await data.highlight(i - 1, i);
                     console.log(i, i - 1);
                     await data.swap(i - 1, i);
                     i--;
@@ -251,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         async comb() {
             let gap = Math.floor(data.length * 0.8);
-            // let swapped = true;
+            let swapped = true;
             while (gap > 1 || swapped) {
                 if (gap < 1) return;
 
@@ -261,6 +259,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     if (data[i] > data[i + gap]) {
                         swapped = true;
+                        await data.swap(i, i + gap);
+                    }
+                }
+                gap = Math.floor(gap * 0.8);
+            }
+        },
+
+        async comb() {
+            let gap = Math.floor(data.length * 0.8);
+            while (gap >= 1) {
+                for (let i = 0; i < data.length - gap; i++) {
+                    await data.highlight(i, i + gap);
+
+                    if (data[i] > data[i + gap]) {
                         await data.swap(i, i + gap);
                     }
                 }

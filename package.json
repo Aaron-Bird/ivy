@@ -1,0 +1,36 @@
+{
+  "name": "ivy",
+  "version": "1.0.0",
+  "description": "Visualization of sorting algorithm\r [preview](http://htmlpreview.github.io/?https://github.com/Aaron-Bird/ivy/blob/master/index.html)",
+  "main": "main.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack-dev-server --open",
+    "build": "webpack --config webpack.build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aaron-Bird/ivy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Aaron-Bird/ivy/issues"
+  },
+  "homepage": "https://github.com/Aaron-Bird/ivy#readme",
+  "dependencies": {
+    "webpack": "^4.19.1",
+    "webpack-cli": "^3.1.0"
+  },
+  "devDependencies": {
+    "css-loader": "^1.0.0",
+    "html-webpack-plugin": "^3.2.0",
+    "style-loader": "^0.23.0",
+    "terser-webpack-plugin": "^1.1.0",
+    "webpack-dev-server": "^3.1.8"
+  }
+}

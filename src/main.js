@@ -1,4 +1,4 @@
-import './main.css'
+import './main.css';
 
 document.addEventListener('DOMContentLoaded', function () {
     let sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -7,11 +7,23 @@ document.addEventListener('DOMContentLoaded', function () {
         freeze: false,
         container: document.querySelector('#sort-view ul'),
         children: document.querySelector('#sort-view ul').getElementsByTagName('li'),
-        speed: parseInt(document.querySelector('#speed').value) || 50,
+        _speed: parseInt(document.querySelector('#speed').value) || 0,
+        get speed() {
+            return this._speed;
+        },
+        set speed(millisecond) {
+            this._speed = millisecond;
+            let style = document.querySelector('style#transition-duration');
+            if (!style) {
+                style = document.createElement('style');
+                style.id = 'transition-duration';
+                document.head.appendChild(style);
+            }
+            style.innerText = `#sort-view li {transition-duration: ${millisecond / 1000}s};`;
+        },
         get length() {
             return this.children.length;
         },
-
         createData(amount) {
             let container = document.querySelector('#sort-view ul');
             container.innerHTML = '';
@@ -19,7 +31,6 @@ document.addEventListener('DOMContentLoaded', function () {
             let ulWidth = parseInt(getComputedStyle(container, null).width);
             let liWidth = ulWidth / amount;
             let liboardRadius = liWidth / 2;
-
             let colorStart = 'rgb(51,8,103)'.match(/\d+/g).map(Number);
             let colorEnd = 'rgb(48,207,208)'.match(/\d+/g).map(Number);
             let rDifference = (colorEnd[0] - colorStart[0]) / amount;
@@ -33,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 li.number = number;
                 li.style.height = number + 'px';
                 li.style.width = liWidth + 'px';
+                li.style.backgroundPositionX = -liWidth * i + 'px';
                 li.style.backgroundColor = `rgb(
                     ${Math.floor(colorStart[0] + rDifference * i)},
                     ${Math.floor(colorStart[1] + gDifference * i)},
@@ -42,7 +54,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             arr.sort(_ => 0.5 - Math.random());
-            arr.forEach(li => container.appendChild(li));
+            arr.forEach((li, i) => {
+                li.style.left = liWidth * i + 'px';
+                container.appendChild(li);
+            });
         },
 
         async swap(i, j) {
@@ -54,16 +69,48 @@ document.addEventListener('DOMContentLoaded', function () {
             let elementI = children[i];
             let elementJ = children[j];
             let afterElementOfJ = children[j].nextElementSibling;
+            // swap element
             container.insertBefore(elementJ, elementI);
             container.insertBefore(elementI, afterElementOfJ);
+
+            // play animation
+            // forced reflow
+            container.offsetHeight;
+            [elementI.style.left, elementJ.style.left] = [elementJ.style.left, elementI.style.left];
 
             await sleep(this.speed);
         },
 
         async insert(i, target) {
+            if (i === target) return;
+
             let container = this.container,
                 children = this.children;
+            let elementI = children[i];
+            let elementTarget = children[target];
+            let elementTargetPrev = elementTarget.previousElementSibling;
             container.insertBefore(children[i], children[target]);
+
+            // play animation
+            let liWidth = parseFloat(children[0].style.width);
+            // forced reflow
+            container.offsetHeight;
+
+            let targetPostion;
+            if (target < i) {
+                targetPostion = elementTarget.style.left;
+                for (let j = target + 1; j <= i; j++) {
+                    let left = parseFloat(children[j].style.left);
+                    children[j].style.left = left + liWidth + 'px';
+                }
+            } else {
+                targetPostion = elementTargetPrev.style.left;
+                for (let j = i; j < target - 1; j++) {
+                    let left = parseFloat(children[j].style.left);
+                    children[j].style.left = left - liWidth + 'px';
+                }
+            }
+            elementI.style.left = targetPostion;
 
             await sleep(this.speed);
         },
@@ -91,9 +138,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 return target.children[propKey].number;
             }
             return Reflect.get(target, propKey, receiver);
-        },
-
+        }
     });
+
 
     let algorithm = {
         async bubble() {
@@ -127,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 right--;
 
                 if (!swapped) return;
-                swapped = true;
+                swapped = false;
 
                 for (let i = right; i > left; i--) {
                     await data.highlight(i, i - 1);
@@ -218,7 +265,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (i === 0 || data[i - 1] < data[i]) {
                     i++;
                 } else {
-                    console.log(i, i - 1);
                     await data.swap(i - 1, i);
                     i--;
                 }
@@ -346,7 +392,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     // monotonic increasing and data[i] > data[i + gap] 
                     // monotonic decreasing and data[i] < data[i + gap]
                     if (data[i] > data[i + gap] === isAscending) {
-                        await data.swap(i, i + gap)
+                        await data.swap(i, i + gap);
                     }
                 }
                 await merge(start, gap, isAscending);
@@ -360,6 +406,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 let gap = getMultipleOfTwo(length);
                 await divide(start, gap, false);
                 await divide(start + gap, length - gap, true);
+               
                 await merge(start, length, isAscending);
             };
 
@@ -369,23 +416,34 @@ document.addEventListener('DOMContentLoaded', function () {
         async sleep() {
             let j = 0;
             let container = data.container;
+            let children = data.children;
+            if (children.length > 100) data.speed = 0;
             // Set a delay to have all 'setTimeout' start at the same time
             let willStartTime = new Date().getTime() + 100;
             for (let i = 0; i < data.length; i++) {
-                let element = data.children[i];
+                let element = children[i];
                 let timeDiff = willStartTime - new Date().getTime();
                 setTimeout(_ => {
                     if (data.freeze) return;
-                    // Unable to determine index after order change, sorted by element instead of index
-                    container.insertBefore(element, data.children[j]);
+
+                    // play animation
+                    let liWidth = parseFloat(children[0].style.width);
+                    let targetPostion = children[j].style.left;
+                    for (let k = j; k < children.length; k++) {
+                        if (children[k] === element) {
+                            container.insertBefore(element, children[j]);
+                            element.style.left = targetPostion;
+                            break;
+                        }
+                        children[k].style.left = parseFloat(children[k].style.left) + liWidth + 'px';
+                    }
                     j++;
-                }, timeDiff + data[i] * 10);
+                }, timeDiff + data[i] * 20);
             }
             // Block the function until all 'setTimeout' is finished
             // But the "stop button" will fail
-            await sleep(400 * 10);
+            await sleep(400 * 20);
         }
-
     };
 
     let init = _ => {

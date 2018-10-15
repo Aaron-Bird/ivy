@@ -3,11 +3,13 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>
         <%= htmlWebpackPlugin.options.title %>
     </title>
     <script>
-        if (typeof(Proxy) === 'undefined') alert('The browser is not supported, please use chrome or firefox');
+        if (typeof (Proxy) === 'undefined') alert('The browser is not supported, please use chrome or firefox');
     </script>
 </head>
 
@@ -35,9 +37,9 @@
             </div>
             <div class="row">
                 <span>amount</span>
-                <input id="amount" style="border:1px solid #f5f5f5;" value="50">
+                <input id="amount" style="border:1px solid #f5f5f5;" value="100">
                 <span>speed</span>
-                <input id="speed" style="border:1px solid #f5f5f5;" value="20">
+                <input id="speed" style="border:1px solid #f5f5f5;" value="50">
                 <button id="shuffle" style="border:1px solid #f5f5f5;">shuffle</button>
                 <button id="stop" style="border:1px solid #f5f5f5;">stop</button>
             </div>

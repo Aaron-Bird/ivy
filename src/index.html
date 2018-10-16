@@ -3,11 +3,13 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>
         <%= htmlWebpackPlugin.options.title %>
     </title>
     <script>
-        if (typeof(Proxy) === 'undefined') alert('The browser is not supported, please use chrome or firefox');
+        if (typeof (Proxy) === 'undefined') alert('The browser is not supported, please use chrome or firefox');
     </script>
 </head>
 
@@ -16,30 +18,33 @@
         <div id="sort-view">
             <ul></ul>
         </div>
-        <div class="btns">
+        <div class="option">
             <div class="row">
-                <button id="bubble" class="sort">bubble</button>
-                <button id="insert" class="sort">insert</button>
-                <button id="gnome" class="sort">gnome</button>
-                <button id="cocktail" class="sort">cocktail</button>
-                <button id="selection" class="sort">selection</button>
-                <button id="shell" class="sort">shell</button>
-                <button id="comb" class="sort">comb</button>
-            </div>
-            <div class="row" style="margin-bottom: 6px">
-                <button id="quick" class="sort">quick</button>
-                <button id="merge" class="sort">merge</button>
-                <button id="heap" class="sort">heap</button>
-                <button id="bitonic" class="sort">bitonic</button>
-                <button id="sleep" class="sort">sleep</button>
-            </div>
-            <div class="row">
-                <span>amount</span>
-                <input id="amount" style="border:1px solid #f5f5f5;" value="50">
-                <span>speed</span>
-                <input id="speed" style="border:1px solid #f5f5f5;" value="20">
-                <button id="shuffle" style="border:1px solid #f5f5f5;">shuffle</button>
-                <button id="stop" style="border:1px solid #f5f5f5;">stop</button>
+                <button id="start">start</button>
+                <button id="stop">stop</button>
+                <button id="shuffle">shuffle</button>
+                <select id="algorithm">
+                    <option value="bubble">bubble</option>
+                    <option value="insert">insert</option>
+                    <option value="gnome">gnome</option>
+                    <option value="cocktail">cocktail</option>
+                    <option value="selection">selection</option>
+                    <option value="shell">shell</option>
+                    <option value="comb">comb</option>
+                    <option value="quick">quick</option>
+                    <option value="merge">merge</option>
+                    <option value="heap">heap</option>
+                    <option value="bitonic" selected>bitonic</option>
+                    <option value="sleep">sleep</option>
+                </select>
+                <div class=" input-box">
+                    <label class="key" for="amount">amount</label>
+                    <input id="amount" class="value" value="50">
+                </div>
+                <div class="input-box">
+                    <label class="key" for="speed">speed</label>
+                    <input id="speed" class="value" value="50">
+                </div>
             </div>
         </div>
     </div>

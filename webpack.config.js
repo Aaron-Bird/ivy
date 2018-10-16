@@ -11,6 +11,8 @@ module.exports = {
     devServer: {
         contentBase: './dist',
         port: 8000,
+        host: '0.0.0.0',
+        public: '127.0.0.1:8000'
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -21,11 +23,19 @@ module.exports = {
     ],
     module: {
         rules: [{
-            test: /\.css$/,
-            use: [
-                'style-loader',
-                'css-loader'
-            ]
-        }]
+                test: /\.css$/,
+                use: [
+                    'style-loader',
+                    'css-loader'
+                ]
+            },
+            {
+                test: /\.(png|svg|jpg|gif)$/,
+                use: [{
+                    loader: 'file-loader',
+                    options: {}
+                }]
+            }
+        ]
     }
 };

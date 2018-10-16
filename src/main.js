@@ -1,35 +1,139 @@
-import './main.css'
+import './main.css';
 
 document.addEventListener('DOMContentLoaded', function () {
-    let sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-
     let data = {
-        freeze: false,
-        container: document.querySelector('#sort-view ul'),
-        children: document.querySelector('#sort-view ul').getElementsByTagName('li'),
-        speed: parseInt(document.querySelector('#speed').value) || 50,
-        get length() {
-            return this.children.length;
+        _sleep(millisecond) {
+            return new Promise(resolve => setTimeout(resolve, millisecond));
         },
 
-        createData(amount) {
-            let container = document.querySelector('#sort-view ul');
-            container.innerHTML = '';
-            let ulHeight = parseInt(getComputedStyle(container, null).height);
-            let ulWidth = parseInt(getComputedStyle(container, null).width);
-            let liWidth = ulWidth / amount;
-            let liboardRadius = liWidth / 2;
+        _container: null,
+        getContainer() {
+            return this._container;
+        },
 
+        _children: null,
+        getChildren() {
+            return this._children;
+        },
+
+        _freeze: false,
+        freeze() {
+            this._freeze = true;
+        },
+        unfreeze() {
+            this._freeze = false;
+        },
+        isFrozen() {
+            return this._freeze;
+        },
+
+        _speed: 50,
+        getSpeed() {
+            return this._speed;
+        },
+        setSpeed(millisecond) {
+            this._speed = millisecond;
+        },
+
+        get length() {
+            return this._children.length;
+        },
+        set length(value) {
+            throw 'Cannot set length';
+        },
+
+        async swap(i, j) {
+            let container = this._container,
+                children = this._children;
+
+            if (i > j)[i, j] = [j, i];
+            let elementI = children[i];
+            let elementJ = children[j];
+            let afterElementOfJ = children[j].nextElementSibling;
+
+            // swap element
+            container.insertBefore(elementJ, elementI);
+            container.insertBefore(elementI, afterElementOfJ);
+
+            // play animation
+            // forced reflow
+            container.offsetHeight;
+            [elementI.style.left, elementJ.style.left] = [elementJ.style.left, elementI.style.left];
+
+            await this._sleep(this._speed);
+        },
+
+        async insert(i, target) {
+            if (i === target) return;
+
+            let container = this._container,
+                children = this._children;
+            let elementI = children[i];
+            let elementTarget = children[target];
+            let elementTargetPrev = elementTarget.previousElementSibling;
+
+            container.insertBefore(children[i], children[target]);
+
+            // play animation
+            let liWidth = parseFloat(children[0].style.width);
+            // forced reflow
+            container.offsetHeight;
+
+            let targetPostion;
+            if (target < i) {
+                targetPostion = elementTarget.style.left;
+                for (let j = target + 1; j <= i; j++) {
+                    let left = parseFloat(children[j].style.left);
+                    children[j].style.left = left + liWidth + 'px';
+                }
+            } else {
+                targetPostion = elementTargetPrev.style.left;
+                for (let j = i; j < target - 1; j++) {
+                    let left = parseFloat(children[j].style.left);
+                    children[j].style.left = left - liWidth + 'px';
+                }
+            }
+            elementI.style.left = targetPostion;
+
+            await this._sleep(this._speed);
+        },
+
+        _highlightNodes: [],
+        removeHighlight() {
+            while (this._highlightNodes.length) {
+                let node = this._highlightNodes.shift();
+                node.classList.remove('sorting');
+            }
+        },
+        async highlight(...nodes) {
+            this.removeHighlight();
+            nodes.forEach(i => {
+                if (i < 0 || i >= this.length) return;
+                this._children[i].classList.add('sorting');
+                this._highlightNodes.push(this._children[i]);
+            });
+
+            await this._sleep(this._speed);
+        },
+
+        render(amount) {
+            let container = this._container;
+
+            container.innerHTML = '';
+            let containerHeight = parseInt(getComputedStyle(container, null).height);
+            let Width = parseInt(getComputedStyle(container, null).width);
+            let liWidth = Width / amount;
+            let liBoardRadius = liWidth / 2;
             let colorStart = 'rgb(51,8,103)'.match(/\d+/g).map(Number);
             let colorEnd = 'rgb(48,207,208)'.match(/\d+/g).map(Number);
             let rDifference = (colorEnd[0] - colorStart[0]) / amount;
             let gDifference = (colorEnd[1] - colorStart[1]) / amount;
             let bDifference = (colorEnd[2] - colorStart[2]) / amount;
 
-            let arr = [];
+            let lis = [];
             for (let i = 0; i < amount; i++) {
                 let li = document.createElement('li');
-                let number = Math.round((ulHeight - liboardRadius) / amount * i + liboardRadius);
+                let number = Math.round((containerHeight - liBoardRadius) / amount * i + liBoardRadius);
                 li.number = number;
                 li.style.height = number + 'px';
                 li.style.width = liWidth + 'px';
@@ -38,44 +142,25 @@ document.addEventListener('DOMContentLoaded', function () {
                     ${Math.floor(colorStart[1] + gDifference * i)},
                     ${Math.floor(colorStart[2] + bDifference * i)}
                 )`;
-                arr.push(li);
+                lis.push(li);
             }
 
-            arr.sort(_ => 0.5 - Math.random());
-            arr.forEach(li => container.appendChild(li));
-        },
-
-        async swap(i, j) {
-            let container = this.container,
-                children = this.children;
-            if (i > j) {
-                [i, j] = [j, i];
-            }
-            let elementI = children[i];
-            let elementJ = children[j];
-            let afterElementOfJ = children[j].nextElementSibling;
-            container.insertBefore(elementJ, elementI);
-            container.insertBefore(elementI, afterElementOfJ);
-
-            await sleep(this.speed);
-        },
-
-        async insert(i, target) {
-            let container = this.container,
-                children = this.children;
-            container.insertBefore(children[i], children[target]);
-
-            await sleep(this.speed);
-        },
-
-        async highlight(...args) {
-            [...this.children].forEach(element => element.classList.remove('sorting'));
-            args.forEach(i => {
-                if (i < 0 || i >= this.length) return;
-                this.children[i].classList.add('sorting');
+            lis.sort(_ => 0.5 - Math.random());
+            lis.forEach((li, i) => {
+                li.style.left = liWidth * i + 'px';
+                container.appendChild(li);
             });
+        },
 
-            await sleep(this.speed);
+        _init: false,
+        isInit() {
+            return this._init;
+        },
+        init(container) {
+            if (!container || container.nodeType !== 1) throw `'container' must be an element`;
+            this._container = container;
+            this._children = container.children;
+            this._init = true;
         },
 
         *[Symbol.iterator]() {
@@ -87,12 +172,11 @@ document.addEventListener('DOMContentLoaded', function () {
     data = new Proxy(data, {
         get(target, propKey, receiver) {
             if (typeof (propKey) !== "symbol" && /^\d+$/.test(propKey)) {
-                if (target.freeze) throw 'stop';
-                return target.children[propKey].number;
+                if (target.isFrozen()) throw 'stop';
+                return target._children[propKey].number;
             }
             return Reflect.get(target, propKey, receiver);
-        },
-
+        }
     });
 
     let algorithm = {
@@ -127,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 right--;
 
                 if (!swapped) return;
-                swapped = true;
+                swapped = false;
 
                 for (let i = right; i > left; i--) {
                     await data.highlight(i, i - 1);
@@ -218,7 +302,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (i === 0 || data[i - 1] < data[i]) {
                     i++;
                 } else {
-                    console.log(i, i - 1);
                     await data.swap(i - 1, i);
                     i--;
                 }
@@ -346,7 +429,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     // monotonic increasing and data[i] > data[i + gap] 
                     // monotonic decreasing and data[i] < data[i + gap]
                     if (data[i] > data[i + gap] === isAscending) {
-                        await data.swap(i, i + gap)
+                        await data.swap(i, i + gap);
                     }
                 }
                 await merge(start, gap, isAscending);
@@ -360,6 +443,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 let gap = getMultipleOfTwo(length);
                 await divide(start, gap, false);
                 await divide(start + gap, length - gap, true);
+
                 await merge(start, length, isAscending);
             };
 
@@ -368,89 +452,128 @@ document.addEventListener('DOMContentLoaded', function () {
 
         async sleep() {
             let j = 0;
-            let container = data.container;
+            let container = data.getContainer();
+            let children = data.getChildren();
+            // if (children.length > 100) data.speed = 0;
             // Set a delay to have all 'setTimeout' start at the same time
             let willStartTime = new Date().getTime() + 100;
             for (let i = 0; i < data.length; i++) {
-                let element = data.children[i];
+                let element = children[i];
                 let timeDiff = willStartTime - new Date().getTime();
                 setTimeout(_ => {
-                    if (data.freeze) return;
-                    // Unable to determine index after order change, sorted by element instead of index
-                    container.insertBefore(element, data.children[j]);
-                    j++;
-                }, timeDiff + data[i] * 10);
-            }
-            // Block the function until all 'setTimeout' is finished
-            // But the "stop button" will fail
-            await sleep(400 * 10);
-        }
+                    if (data.isFrozen()) return;
 
+                    // play animation
+                    let liWidth = parseFloat(children[0].style.width);
+                    let targetPostion = children[j].style.left;
+                    for (let k = j; k < children.length; k++) {
+                        if (children[k] === element) {
+                            container.insertBefore(element, children[j]);
+                            element.style.left = targetPostion;
+                            break;
+                        }
+                        children[k].style.left = parseFloat(children[k].style.left) + liWidth + 'px';
+                    }
+                    j++;
+                }, timeDiff + data[i] * 20);
+            }
+            return new Promise(resolve => setTimeout(resolve, 400 * 20));
+        }
     };
 
     let init = _ => {
-        let algorithmButtonList = document.querySelectorAll('.sort');
+        let containerNode = document.querySelector('#sort-view ul');
+        let startNode = document.querySelector('#start');
+        let stopNode = document.querySelector('#stop');
+        let shuffleNode = document.querySelector('#shuffle');
+        let algorithmNode = document.querySelector('#algorithm');
+        let amountNode = document.querySelector('#amount');
+        let speedNode = document.querySelector('#speed');
+        let setSpeed = (speed) => {
+            data.setSpeed(speed);
+            let style = document.querySelector('style#transition-duration');
+            if (!style) {
+                style = document.createElement('style');
+                style.id = 'transition-duration';
+                document.head.appendChild(style);
+            }
+            style.innerText = `#sort-view li {transition-duration: ${speed / 1000}s};`;
+        };
 
-        let disableAlgorithmButtonList = _ => {
-            algorithmButtonList.forEach(algorithmButton => {
-                algorithmButton.disabled = true;
-                algorithmButton.classList.add('disabled');
+        data.init(containerNode);
+        setSpeed(speedNode.value);
+        data.render(parseInt(amountNode.value));
+
+        let runAlgoSleep = function () {
+            let style = document.querySelector('style#transition-duration');
+            let styleText = style.innerText;
+            style.innerText = '';
+            algorithm[algorithmNode.value]().then(function (v) {
+                data.removeHighlight();
+            }).catch(error => {
+                console.log(error);
+            }).finally(_ => {
+                style.innerText = styleText;
+                startNode.disabled = false;
+                startNode.classList.toggle('disable');
             });
         }
+        startNode.addEventListener('click', event => {
+            data.unfreeze();
+            data.removeHighlight();
 
-        let enableAlgorithmButtonList = _ => {
-            algorithmButtonList.forEach(algorithmButton => {
-                algorithmButton.disabled = false;
-                algorithmButton.classList.remove('disabled');
-            });
-        }
-
-        data.createData(parseInt(document.querySelector('#amount').value));
-
-        document.querySelectorAll('.sort').forEach(element => {
-            element.addEventListener('click', event => {
-                disableAlgorithmButtonList();
-                var btnName = event.target.id;
-                data.freeze = false;
-                algorithm[btnName]().then(function (v) {
-                    data.highlight();
+            startNode.disabled = true;
+            startNode.classList.toggle('disable');
+            let algo = algorithmNode.value;
+            if (algo === 'sleep') {
+                runAlgoSleep();
+            } else {
+                algorithm[algo]().then(function (v) {
+                    data.removeHighlight();
                 }).catch(error => {
                     console.log(error);
                 }).finally(_ => {
-                    enableAlgorithmButtonList();
+                    startNode.disabled = false;
+                    startNode.classList.toggle('disable');
                 })
-            });
-        })
+            }
 
-        document.querySelector('#stop').addEventListener('click', event => {
-            data.freeze = true;
         });
 
-        document.querySelector('#shuffle').addEventListener('click', event => {
-            data.freeze = true;
-            data.createData(data.length);
+        stopNode.addEventListener('click', event => {
+            data.freeze();
         });
 
-        document.querySelector('#speed').addEventListener('input', event => {
-            data.speed = parseInt(event.currentTarget.value);
+        algorithmNode.addEventListener('change', event => {
+            data.freeze();
         });
 
-        document.querySelector('#amount').addEventListener('input', event => {
+        shuffleNode.addEventListener('click', event => {
+            data.freeze();
+            data.render(data.length);
+        });
+
+        speedNode.addEventListener('input', event => {
+            setSpeed(parseInt(event.currentTarget.value));
+        });
+
+        amountNode.addEventListener('input', event => {
             let length = parseInt(event.currentTarget.value);
-            data.createData(length > 800 ? 800 : length);
+            data.render(length > 800 ? 800 : length);
         });
 
         (_ => {
             let sign = true,
                 delay = 100;
             document.querySelector('#amount').addEventListener('keydown', event => {
-                if (sign === false) return;
+                data.freeze();
 
+                if (sign === false) return;
                 if (event.key === 'ArrowUp') {
                     let length = parseInt(event.currentTarget.value) + 50;
                     if (length > 900) length = 900;
                     event.currentTarget.value = length;
-                    data.createData(length);
+                    data.render(length);
 
                     sign = false;
                     setTimeout(_ => sign = true, delay);
@@ -458,7 +581,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     let length = parseInt(event.currentTarget.value) - 50;
                     if (length < 0) length = 0;
                     event.currentTarget.value = length;
-                    data.createData(length > 900 ? 900 : length);
+                    data.render(length > 900 ? 900 : length);
 
                     sign = false;
                     setTimeout(_ => sign = true, delay);
@@ -473,17 +596,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (sign === false) return;
 
                 if (event.key === 'ArrowUp') {
-                    let speed = parseInt(event.currentTarget.value) + 5;
+                    let speed = parseInt(event.currentTarget.value) + 50;
                     event.currentTarget.value = speed;
-                    data.speed = speed;
+                    setSpeed(speed);
 
                     sign = false;
                     setTimeout(_ => sign = true, delay);
                 } else if (event.key === 'ArrowDown') {
-                    let speed = parseInt(event.currentTarget.value) - 5;
+                    let speed = parseInt(event.currentTarget.value) - 50;
                     if (speed < 0) speed = 0;
                     event.currentTarget.value = speed;
-                    data.speed = speed;
+                    setSpeed(speed);
 
                     sign = false;
                     setTimeout(_ => sign = true, delay);
